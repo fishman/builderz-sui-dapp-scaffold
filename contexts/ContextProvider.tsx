@@ -1,28 +1,43 @@
 "use client";
 
-import { WalletError } from "@solana/wallet-adapter-base";
-import {
-  ConnectionProvider,
-  WalletProvider,
-} from "@solana/wallet-adapter-react";
-import { FC, ReactNode, useCallback, useMemo } from "react";
-import { WalletModalProvider as ReactUIWalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import dynamic from "next/dynamic";
+import { 
+  SuiClientProvider,
+  createNetworkConfig
+} from "@mysten/dapp-kit";
+
+const WalletProvider = dynamic(
+  () => import("@mysten/dapp-kit").then((mod) => mod.WalletProvider),
+  { ssr: false }
+);
+import { FC, ReactNode } from "react";
+import { getFullnodeUrl } from "@mysten/sui.js/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const { networkConfig } = createNetworkConfig({
+  localnet: { url: getFullnodeUrl('localnet') },
+  devnet: { url: getFullnodeUrl('devnet') },
+  testnet: { url: getFullnodeUrl('testnet') },
+  mainnet: { url: getFullnodeUrl('mainnet') },
+});
+
+const queryClient = new QueryClient();
 
 export const WalletContextProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const wallets = useMemo(() => [], []);
-
-  const onError = useCallback((error: WalletError) => {
-    console.error(error);
-  }, []);
-
   return (
-    <ConnectionProvider endpoint={process.env.NEXT_PUBLIC_HELIUS_URL!}>
-      <WalletProvider wallets={wallets} onError={onError} autoConnect={false}>
-        <ReactUIWalletModalProvider>{children}</ReactUIWalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
+    <QueryClientProvider client={queryClient}>
+      <SuiClientProvider networks={networkConfig} defaultNetwork="devnet">
+        <WalletProvider 
+          preferredWallets={[]}
+          autoConnect={false}
+          features={["sui:signAndExecuteTransactionBlock"]}
+        >
+          {children}
+        </WalletProvider>
+      </SuiClientProvider>
+    </QueryClientProvider>
   );
 };
 

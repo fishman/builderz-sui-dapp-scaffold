@@ -28,17 +28,22 @@ const Index: React.FC = async () => {
             <Image
               width={75}
               height={75}
-              src="/sol.png"
+              src="/sui.png"
               className=""
-              alt="sol"
+              alt="sui"
             />
           </div>
           <h1 className="text-black dark:text-white">
-            Hello Solana, meet Builderz.dev 👋
+            Hello Sui, meet Builderz.dev 👋
           </h1>
           <p className={` text-black dark:text-white`}>
-            Explore what you can do with Builderz&rsquo; brand new{" "}
-            <b>Builderz Solana dApp Scaffold</b>
+            Build powerful decentralized applications with Builderz&rsquo;{" "}
+            <b>Sui dApp Scaffold</b> featuring:
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li>Sui Wallet Integration</li>
+              <li>Transaction Building</li>
+              <li>Object and Package Management</li>
+            </ul>
           </p>
           <div className="flex flex-row items-start justify-start gap-4 ">
             <Link
